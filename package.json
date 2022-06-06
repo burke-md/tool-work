@@ -1,0 +1,23 @@
+{
+  "name": "tool-work",
+  "version": "1.0.0",
+  "description": "This repo will be a continuation of the work that began in previous project.  It can be found [here](https://github.com/burke-md/tool-nft).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burke-md/tool-work.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/burke-md/tool-work/issues"
+  },
+  "homepage": "https://github.com/burke-md/tool-work#readme",
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.6.0",
+    "hardhat": "^2.9.7"
+  }
+}
