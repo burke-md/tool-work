@@ -18,6 +18,11 @@
   "homepage": "https://github.com/burke-md/tool-work#readme",
   "devDependencies": {
     "@openzeppelin/contracts": "^4.6.0",
+    "chai": "^4.3.6",
+    "ethers": "^5.6.8",
     "hardhat": "^2.9.7"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.6"
   }
 }
