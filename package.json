@@ -4,7 +4,8 @@
   "description": "This repo will be a continuation of the work that began in previous project.  It can be found [here](https://github.com/burke-md/tool-nft).",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "report": "npx hardhat coverage"
   },
   "repository": {
     "type": "git",
@@ -17,12 +18,12 @@
   },
   "homepage": "https://github.com/burke-md/tool-work#readme",
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@openzeppelin/contracts": "^4.6.0",
     "chai": "^4.3.6",
     "ethers": "^5.6.8",
-    "hardhat": "^2.9.7"
+    "hardhat": "^2.9.7",
+    "solidity-coverage": "^0.7.21"
   },
-  "dependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.6"
-  }
+  "dependencies": {}
 }

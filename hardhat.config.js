@@ -2,6 +2,7 @@
  * @type import('hardhat/config').HardhatUserConfig
  */
  require('@nomiclabs/hardhat-ethers');
+ require('solidity-coverage')
  const { alchemyApiKey, mnemonic } = require('./.secrets.json');
  
   module.exports = {
