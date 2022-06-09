@@ -1,15 +1,17 @@
-version: 2.1
+version: '2.1'
 orbs:
-  node: circleci/node@4.7.0
+  node: circleci/node@x.y
 jobs:
-  build:
+  test:
     executor:
       name: node/default
-      tag: '10.4'
+      tag: '13.14'
     steps:
       - checkout
-      - run: echo "A first hello"
-      - run: mkdir -p my_workspace
-      - run: echo "Trying out workspaces" > my_workspace/echo-output
-      - run: npm install
-      - run: npm run report
+      - node/install-packages
+      - run:
+          command: npm run report
+workflows:
+  test_my_app:
+    jobs:
+      - test
