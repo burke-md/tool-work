@@ -2,7 +2,7 @@ version: '2.1'
 orbs:
   node: circleci/node@5.0.2
 jobs:
-  test:
+  report:
     executor:
       name: node/default
       tag: '13.14'
@@ -11,7 +11,8 @@ jobs:
       - node/install-packages
       - run:
           command: npm run report
+          command: npx hardhat test
 workflows:
   test&coverage_report:
     jobs:
-      - test
+      - report
