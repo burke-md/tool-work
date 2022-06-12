@@ -12,60 +12,67 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 
 contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
-  using Counters for Counters.Counter;
-  Counters.Counter private _tokenIdCounter;
+    
+    constructor() ERC721("Tool", "TOOL") {}
 
-  constructor() ERC721("Tool", "TOOL") {}
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
 
-  function _baseURI() internal pure override returns (string memory) {
-    return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
-  }
 
-  function pause() public onlyOwner {
-    _pause();
-  }
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
+    }
 
-  function unpause() public onlyOwner {
-    _unpause();
-  }
+    function pause() public onlyOwner {
+        _pause();
+    }
 
-  function safeMint(address to) public onlyOwner {
-    require(_tokenIdCounter.current() < 5, 'tokenIdCounter has incremented beyond maximum number of tokens');
+    function unpause() public onlyOwner {
+        _unpause();
+    }
 
-    _tokenIdCounter.increment();
-    uint256 tokenId = _tokenIdCounter.current();
-    _safeMint(to, tokenId);
-    appendJsonSuffix(tokenId);
-  }
+    function safeMint(address to) public onlyOwner {
+        require(_tokenIdCounter.current() < 5, 'tokenIdCounter has incremented beyond maximum number of tokens');
 
-  function appendJsonSuffix(uint256 tokenId) internal {
-    string memory numTokenId = Strings.toString(tokenId);
-    string memory suffix = string(abi.encodePacked(numTokenId, ".json"));
-    _setTokenURI(tokenId, suffix);
-  }
+        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
+        _safeMint(to, tokenId);
+        appendJsonSuffix(tokenId);
+    }
 
-  function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-    internal
-    whenNotPaused
-    override
-  {
-    super._beforeTokenTransfer(from, to, tokenId);
-  }
+    function appendJsonSuffix(uint256 tokenId) internal {
+        string memory numTokenId = Strings.toString(tokenId);
+        string memory suffix = string(abi.encodePacked(numTokenId, ".json"));
+        _setTokenURI(tokenId, suffix);
+    }
 
-  function getNumMintedTokens() public view returns(uint256) {
-    return _tokenIdCounter.current();
-  }
 
-  /*@dev The following functions (_burn, tokenURI) need
-  to be overridden as there are multiple
-  definitions.
-  */
-  function _burn(uint256 tokenId) internal override(ERC721,
-  ERC721URIStorage) {
-    super._burn(tokenId);
-  }
+//---------------------------------GETTERS-----------------------------------\\
+//---------------------------------------------------------------------------\\
 
-  function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-    return super.tokenURI(tokenId);
-  }
+    function getNumMintedTokens() public view returns(uint256) {
+        return _tokenIdCounter.current();
+    }
+
+//--------------------------------OVERRIDES----------------------------------\\
+//---------------------------------------------------------------------------\\
+
+    function _burn(uint256 tokenId) 
+        internal override(ERC721,
+        ERC721URIStorage) {
+            super._burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenId) 
+        public view override(ERC721, ERC721URIStorage) 
+        returns (string memory) {
+            return super.tokenURI(tokenId);
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        whenNotPaused
+        override {
+            super._beforeTokenTransfer(from, to, tokenId);
+    }
 }
