@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 
 
 contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
@@ -37,15 +36,40 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to, tokenId);
-        appendJsonSuffix(tokenId);
+        setFullURI(tokenId);
     }
 
-    function appendJsonSuffix(uint256 tokenId) internal {
-        string memory numTokenId = Strings.toString(tokenId);
-        string memory suffix = string(abi.encodePacked(numTokenId, ".json"));
+    function setFullURI(uint256 tokenId) internal {
+        string memory suffix = string(
+            abi.encodePacked(
+                uint2str(tokenId), 
+                ".json"));
+
         _setTokenURI(tokenId, suffix);
     }
 
+
+//----------------------------------HELPER-----------------------------------\\
+//---------------------------------------------------------------------------\\
+
+    function uint2str(uint _int) internal pure returns (string memory) {
+        if (_int == 0) {
+            return "0";
+        }
+        uint j = _int;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_int != 0) {
+            unchecked { bstr[k--] = bytes1(uint8(48 + _int % 10)); }
+            _int /= 10;
+        }
+        return string(bstr);
+    }
 
 //---------------------------------GETTERS-----------------------------------\\
 //---------------------------------------------------------------------------\\
