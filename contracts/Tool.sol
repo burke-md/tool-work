@@ -7,16 +7,14 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 
 contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     
     constructor() ERC721("Tool", "TOOL") {}
-
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIdCounter;
-
+    
+    uint8 public constant   MAX_ID_PLUS_ONE = 6;
+    uint8 public tokenIdCounter = 0;
 
     function _baseURI() internal pure override returns (string memory) {
         return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
@@ -31,12 +29,13 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     }
 
     function safeMint(address to) public onlyOwner {
-        require(_tokenIdCounter.current() < 5, 'tokenIdCounter has incremented beyond maximum number of tokens');
+        tokenIdCounter++;
+        uint8 _currentId = tokenIdCounter;
+        require(_currentId < MAX_ID_PLUS_ONE,
+                'tokenIdCounter has incremented beyond maximum number of tokens');
 
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(to, tokenId);
-        setFullURI(tokenId);
+        _safeMint(to, _currentId);
+        setFullURI(_currentId);
     }
 
     function setFullURI(uint256 tokenId) internal {
@@ -73,11 +72,9 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 
 //---------------------------------GETTERS-----------------------------------\\
 //---------------------------------------------------------------------------\\
-
     function getNumMintedTokens() public view returns(uint256) {
-        return _tokenIdCounter.current();
+        return tokenIdCounter;
     }
-
 //--------------------------------OVERRIDES----------------------------------\\
 //---------------------------------------------------------------------------\\
 
