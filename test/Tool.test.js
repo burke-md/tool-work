@@ -11,11 +11,7 @@ describe('Tool', function () {
     await this.tool.deployed();
   });
 
-  it('returns zero total tokens before any are minted.', async function () {
-    expect((await this.tool.getNumMintedTokens()).toString()).to.equal('0');
-  });
-
-  it('returns two total tokens after two are minted.', async function () {
+  it('increments token counter correctly', async function () {
     await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
 
     await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
