@@ -21,3 +21,11 @@ minting process refers to the current minted value multiple times. This gets
 held in the function to avoid reading from the stored value multiple times.
 Using the gas price of 38.72 the savings of these changes amount to
 287 418.56 Gwei.
+
+### Using ```unchecked``` block where over/under flow is impossible:
+
+In the newer release of solidity, safeMath is no longer required to prevent 
+under/over flow conditions. However, this included protection of course costs 
+gas. Within a protected block of code (where require statments prevent such 
+conditions) we can escape this included feature. See within the mint function
+for incrementing token id/index. The savings are 4026.88 Gwei.
