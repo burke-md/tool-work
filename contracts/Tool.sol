@@ -13,8 +13,8 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     
     constructor() ERC721("Tool", "TOOL") {}
     
-    uint8 public constant   MAX_ID_PLUS_ONE = 6;
-    uint8 public tokenIdCounter = 0;
+    uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
+    uint8 public currentIndex = 1;
 
     function _baseURI() internal pure override returns (string memory) {
         return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
@@ -29,13 +29,17 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     }
 
     function safeMint(address to) public onlyOwner {
-        tokenIdCounter++;
-        uint8 _currentId = tokenIdCounter;
-        require(_currentId < MAX_ID_PLUS_ONE,
+        uint8 _currentIndex = currentIndex;
+        require(_currentIndex < MAX_TOKENS_PLUS_ONE,
                 'tokenIdCounter has incremented beyond maximum number of tokens');
 
-        _safeMint(to, _currentId);
-        setFullURI(_currentId);
+        _safeMint(to, _currentIndex);
+
+        unchecked {
+            currentIndex++;
+        }
+
+        setFullURI(_currentIndex);
     }
 
     function setFullURI(uint256 tokenId) internal {
@@ -73,7 +77,7 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 //---------------------------------GETTERS-----------------------------------\\
 //---------------------------------------------------------------------------\\
     function getNumMintedTokens() public view returns(uint256) {
-        return tokenIdCounter;
+        return currentIndex - 1;
     }
 //--------------------------------OVERRIDES----------------------------------\\
 //---------------------------------------------------------------------------\\
