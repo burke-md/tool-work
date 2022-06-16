@@ -12,9 +12,9 @@ describe('Tool', function () {
   });
 
   it('increments token counter correctly', async function () {
-    await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
 
-    await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
 
     expect((await this.tool.getNumMintedTokens()).toString()).to.equal('2');
   });
@@ -22,14 +22,14 @@ describe('Tool', function () {
 
  it('should not mint more than maximum allowable tokens', async function () {
    let isErr = false;  
-    const token1 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
-    const token2 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
-    const token3 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
-    const token4 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8")  
-    const token5 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");     
+    const token1 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    const token2 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    const token3 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    const token4 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8")  
+    const token5 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");     
     
     try {
-      await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+      await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
     } catch (err) {
       isErr = true;
     }
@@ -38,9 +38,9 @@ describe('Tool', function () {
   });
 
   it('should mint a new token and append ${tokenID}.json to the base URI value.', async function () {
-    const token1 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    const token1 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
 
-    const token2 = await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+    const token2 = await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
 
     const token2URI = await this.tool.tokenURI(2); 
 
@@ -51,7 +51,7 @@ describe('Tool', function () {
     let isErr = false;
     await this.tool.pause();
     try { 
-        await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+        await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
     } catch (err) {
       isErr = true;
     } 
@@ -64,7 +64,7 @@ describe('Tool', function () {
     await this.tool.unpause();
 
     const createToken = async () => {
-      await this.tool.safeMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
+      await this.tool.publicMint("0x70997970c51812dc3a010c7d01b50e0d17dc79c8");
     }
     expect(createToken).not.to.throw();
   });

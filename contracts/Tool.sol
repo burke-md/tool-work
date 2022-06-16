@@ -28,12 +28,14 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         _unpause();
     }
 
-    function safeMint(address to) public onlyOwner {
+    function publicMint(address to) public onlyOwner {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
                 'tokenIdCounter has incremented beyond maximum number of tokens');
-
-        _safeMint(to, _currentIndex);
+        
+        require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
+        
+        _mint(to, _currentIndex);
 
         unchecked {
             currentIndex++;
