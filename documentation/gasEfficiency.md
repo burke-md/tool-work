@@ -29,3 +29,12 @@ under/over flow conditions. However, this included protection of course costs
 gas. Within a protected block of code (where require statments prevent such 
 conditions) we can escape this included feature. See within the mint function
 for incrementing token id/index. The savings are 4026.88 Gwei.
+
+### Remove use of ```_safeMint```:
+
+_safeMint adds an extra protection (when compared to _mint) for the purposes of 
+ensuring the transfer is processed properly when minting to a contract (as 
+opposed to a wallet). As this contract intends to mint dirrectly to users and not
+other contracts (a check has been made for this), the use of _safeMint is not 
+required. Any failed transactions will still revert as usual. This change has 
+saved 110 506.88 Gwei.
