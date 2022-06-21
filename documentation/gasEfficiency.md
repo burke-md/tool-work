@@ -38,3 +38,10 @@ opposed to a wallet). As this contract intends to mint dirrectly to users and no
 other contracts (a check has been made for this), the use of _safeMint is not 
 required. Any failed transactions will still revert as usual. This change has 
 saved 110 506.88 Gwei.
+
+### Compiler optimizer:
+
+Up until this time all optimizations have been to the minting function. This 
+optimization however, effects the contract as a whole. The minting function it
+self has saved 75 813.76 Gwei, however considerable savings across the entire 
+contract can be seen.
