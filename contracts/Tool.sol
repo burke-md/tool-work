@@ -15,6 +15,7 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     
     uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
     uint8 public currentIndex = 1;
+    bytes32 private merkleRoot;
 
     function _baseURI() internal pure override returns (string memory) {
         return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
@@ -28,7 +29,7 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         _unpause();
     }
 
-    function publicMint(address to) public onlyOwner {
+    function publicMint(address to) public {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
                 'tokenIdCounter has incremented beyond maximum number of tokens');
@@ -78,8 +79,15 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 
 //---------------------------------GETTERS-----------------------------------\\
 //---------------------------------------------------------------------------\\
+
     function getNumMintedTokens() public view returns(uint256) {
         return currentIndex - 1;
+    }
+//---------------------------------SETTERS-----------------------------------\\ 
+//---------------------------------------------------------------------------\\
+
+    function setRoot(bytes32 _root) public onlyOwner {
+        merkleRoot = _root;
     }
 //--------------------------------OVERRIDES----------------------------------\\
 //---------------------------------------------------------------------------\\
