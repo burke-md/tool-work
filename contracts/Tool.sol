@@ -17,10 +17,6 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     uint8 public currentIndex = 1;
     bytes32 private merkleRoot;
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
-    }
-
     function pause() public onlyOwner {
         _pause();
     }
@@ -45,19 +41,12 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         setFullURI(_currentIndex);
     }
 
-    function setFullURI(uint256 tokenId) internal {
-        string memory suffix = string(
-            abi.encodePacked(
-                uint2str(tokenId), 
-                ".json"));
-
-        _setTokenURI(tokenId, suffix);
-    }
-
-
 //----------------------------------HELPER-----------------------------------\\
 //---------------------------------------------------------------------------\\
 
+    /** @notice The uint2str function is a helper for handling the 
+    *   concatenation of string numbers.
+    */
     function uint2str(uint _int) internal pure returns (string memory) {
         if (_int == 0) {
             return "0";
@@ -75,6 +64,25 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
             _int /= 10;
         }
         return string(bstr);
+    }
+
+    /** @notice The _baseURI function is a helper, called on mint to point
+    *   to the NFT meta data.
+    */
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
+    }
+
+    /** @notice The setFullURI function is a helper called by the minting 
+    *   function to ensure the URI correctly points to the IPFS meta data.
+    */
+    function setFullURI(uint256 tokenId) internal {
+        string memory suffix = string(
+            abi.encodePacked(
+                uint2str(tokenId), 
+                ".json"));
+
+        _setTokenURI(tokenId, suffix);
     }
 
 //---------------------------------GETTERS-----------------------------------\\
