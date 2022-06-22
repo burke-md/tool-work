@@ -124,6 +124,14 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     function setRoot(bytes32 _root) public onlyOwner {
         merkleRoot = _root;
     }
+
+    function setOpenMint(bool _openMintState) public onlyOwner {
+        openMint = _openMintState;
+    }
+
+    function setOpenALMint(bool _openALMintState) public onlyOwner {
+        openALMint = _openALMintState;
+    }
 //--------------------------------OVERRIDES----------------------------------\\
 //---------------------------------------------------------------------------\\
 
