@@ -19,15 +19,6 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     bool private openMint = false;
     bool private openALMint = false;
 
-    modifier onlyWhenMintOpen () {
-        require(openMint == true, "Tool: Minting has not been opened.");
-        _;
-    }
-
-    modifier onlyWhenALMintOpen () {
-        require(openALMint == true, "Tool: Allow list minting has not been opened.");
-        _;
-    }
 
     function publicMint(address _to) public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
@@ -67,6 +58,19 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 
     function unpause() public onlyOwner {
         _unpause();
+    }
+
+//----------------------------------ACCESS-----------------------------------\\
+//---------------------------------------------------------------------------\\
+
+    modifier onlyWhenMintOpen () {
+        require(openMint == true, "Tool: Minting has not been opened.");
+        _;
+    }
+
+    modifier onlyWhenALMintOpen () {
+        require(openALMint == true, "Tool: Allow list minting has not been opened.");
+        _;
     }
 //----------------------------------HELPER-----------------------------------\\
 //---------------------------------------------------------------------------\\
