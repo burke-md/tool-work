@@ -1,8 +1,13 @@
-const { expect } = require('chai');
+const { expect, use } = require('chai');
 const { ethers } = require('hardhat');
+const { MerkleTree } = require('merkletreejs');
+const { keccak256 } = ethers.utils;
+
+use(require('chai-as-promised'));
 
 describe('Tool', function () {
-    let accounts;
+
+    let address0Proof;
     before(async function () {
         this.Tool= await ethers.getContractFactory('Tool');
     });
@@ -14,6 +19,22 @@ describe('Tool', function () {
         //Set both regular and allowlist mint to true
         await this.tool.setOpenMint(true);
         await this.tool.setOpenALMint(true);
+
+        const accounts = await hre.ethers.getSigners();
+
+        const allowListAccountAddresses = accounts.slice(0, 5).map(x => x.address);
+        const blockListAccountAddresses = accounts.slice(5, 10).map(x => x.address);
+        
+        // Where each wallet address is the data to be hashed into a lead node:
+        const leaves = allowListAccountAddresses.map(account => keccak256(account));
+        const tree = new MerkleTree(leaves, keccak256, { sort: true});
+        const merkleRoot = tree.getHexRoot();
+
+        // After list is compiled and tree is build, each wallet holder is given
+        // a key or "proof" (bytes32). These are not interchangable. 
+        address0Proof = tree.getHexProof(keccak256(allowListAccountAddresses[0]));
+
+        await this.tool.setRoot(merkleRoot);
     });
 
     it('increments token counter correctly', async function () {
@@ -74,17 +95,8 @@ describe('Tool', function () {
     });
 
 
-    xit('should mint a new token via allowListMint function.', async function () {
-        console.log(`accounts: ${accounts}`);
-        let isErr = false; 
-
-        try {
-            await this.tool.allowListMint();
-        } catch (err) {
-            isErr = true
-        }
-
-        expect(isErr).to.equal(false);
+    it('should mint a new token via allowListMint function.', async function () {
+        expect(this.tool.allowListMint(address0Proof)).to.not.be.rejected;
         expect((await this.tool.getNumMintedTokens()).toString()).to.equal('1');
     });
 });
