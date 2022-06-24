@@ -7,10 +7,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
-    
+   
+    /** @dev merkleRoot to be set in constructor
+    *
+    */ 
     constructor() ERC721("Tool", "TOOL") {}
     
     uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
@@ -23,8 +26,7 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     function publicMint(address _to) public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
-                'tokenIdCounter has incremented beyond maximum number of tokens');
-        
+                "Tool: Mint would exceed max number of tokens.");
         require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
         
         _mint(_to, _currentIndex);
@@ -36,20 +38,23 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         setFullURI(_currentIndex);
     }
 
-    function allowListMint(address _to) public  onlyWhenALMintOpen {
-        uint8 _currentIndex = currentIndex;
-        require(_currentIndex < MAX_TOKENS_PLUS_ONE,
-                'tokenIdCounter has incremented beyond maximum number of tokens');
-        
-        require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
-        
-        _mint(_to, _currentIndex);
+    function allowListMint(bytes32 leaf, bytes32[] memory proof) 
+        public  
+        onlyWhenALMintOpen  
+        onlyValidALMintCredentials {
 
-        unchecked {
-            currentIndex++;
-        }
+            uint8 _currentIndex = currentIndex;
+            require(_currentIndex < MAX_TOKENS_PLUS_ONE,
+                    "Tool: Mint would exceed max number of tokens.");
+            require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
+            
+            _mint(msg.sender, _currentIndex);
 
-        setFullURI(_currentIndex);
+            unchecked {
+                currentIndex++;
+            }
+
+            setFullURI(_currentIndex);
     }
 
     function pause() public onlyOwner {
@@ -70,6 +75,12 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 
     modifier onlyWhenALMintOpen () {
         require(openALMint == true, "Tool: Allow list minting has not been opened.");
+        _;
+    }
+
+    modifier onlyValidALMintCredentials () {
+        require(MerkleProof.verify(proof, root, leaf), 
+                "Tool: Invalid allowlist credentials.");
         _;
     }
 //----------------------------------HELPER-----------------------------------\\
