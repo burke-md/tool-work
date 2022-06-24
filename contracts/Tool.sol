@@ -38,10 +38,10 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         setFullURI(_currentIndex);
     }
 
-    function allowListMint(bytes32[] calldata proof) 
+    function allowListMint(bytes32[] calldata _proof) 
         public  
-        onlyWhenALMintOpen  
-        onlyValidALMintCredentials {
+        onlyWhenALMintOpen
+        onlyValidALMintCredentials(_proof) {
 
             uint8 _currentIndex = currentIndex;
             require(_currentIndex < MAX_TOKENS_PLUS_ONE,
@@ -71,19 +71,19 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 //----------------------------------ACCESS-----------------------------------\\
 //---------------------------------------------------------------------------\\
 
-    modifier onlyWhenMintOpen () {
+    modifier onlyWhenMintOpen() {
         require(openMint == true, "Tool: Minting has not been opened.");
         _;
     }
 
-    modifier onlyWhenALMintOpen () {
+    modifier onlyWhenALMintOpen() {
         require(openALMint == true, "Tool: Allow list minting has not been opened.");
         _;
     }
 
-    modifier onlyValidALMintCredentials () {
+    modifier onlyValidALMintCredentials(bytes32[] calldata _proof) {
         require(MerkleProof.verify(
-            proof, root, keccak256(abi.encodePacked(msg.sender))), 
+            _proof, merkleRoot, keccak256(abi.encodePacked(msg.sender))), 
                 "Tool: Invalid allowlist credentials.");
         _;
     }
