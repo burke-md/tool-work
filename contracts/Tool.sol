@@ -7,36 +7,29 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
-    
+   
+    /** @dev merkleRoot to be set in constructor
+    *
+    */ 
     constructor() ERC721("Tool", "TOOL") {}
     
     uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
     uint8 public currentIndex = 1;
-    bytes32 private merkleRoot;
     bool private openMint = false;
     bool private openALMint = false;
+    bytes32 private merkleRoot;
+    mapping(address => bool) public claimedToken;
 
-    modifier onlyWhenMintOpen () {
-        require(openMint == true, "Tool: Minting has not been opened.");
-        _;
-    }
-
-    modifier onlyWhenALMintOpen () {
-        require(openALMint == true, "Tool: Allow list minting has not been opened.");
-        _;
-    }
-
-    function publicMint(address _to) public  onlyWhenMintOpen {
+    function publicMint() public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
-                'tokenIdCounter has incremented beyond maximum number of tokens');
-        
+                "Tool: Mint would exceed max number of tokens.");
         require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
         
-        _mint(_to, _currentIndex);
+        _mint(msg.sender, _currentIndex);
 
         unchecked {
             currentIndex++;
@@ -45,20 +38,26 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         setFullURI(_currentIndex);
     }
 
-    function allowListMint(address _to) public  onlyWhenALMintOpen {
-        uint8 _currentIndex = currentIndex;
-        require(_currentIndex < MAX_TOKENS_PLUS_ONE,
-                'tokenIdCounter has incremented beyond maximum number of tokens');
-        
-        require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
-        
-        _mint(_to, _currentIndex);
+    function allowListMint(bytes32[] calldata _proof) 
+        public  
+        onlyWhenALMintOpen
+        onlyValidALMintCredentials(_proof) {
 
-        unchecked {
-            currentIndex++;
-        }
+            uint8 _currentIndex = currentIndex;
+            require(_currentIndex < MAX_TOKENS_PLUS_ONE,
+                    "Tool: Mint would exceed max number of tokens.");
+            require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
+            require(claimedToken[msg.sender] == false, 
+                    "Tool: This wallet has already claimed their token.");
+            claimedToken[msg.sender] = true;
+            
+            _mint(msg.sender, _currentIndex);
 
-        setFullURI(_currentIndex);
+            unchecked {
+                currentIndex++;
+            }
+
+            setFullURI(_currentIndex);
     }
 
     function pause() public onlyOwner {
@@ -67,6 +66,26 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
 
     function unpause() public onlyOwner {
         _unpause();
+    }
+
+//----------------------------------ACCESS-----------------------------------\\
+//---------------------------------------------------------------------------\\
+
+    modifier onlyWhenMintOpen() {
+        require(openMint == true, "Tool: Minting has not been opened.");
+        _;
+    }
+
+    modifier onlyWhenALMintOpen() {
+        require(openALMint == true, "Tool: Allow list minting has not been opened.");
+        _;
+    }
+
+    modifier onlyValidALMintCredentials(bytes32[] calldata _proof) {
+        require(MerkleProof.verify(
+            _proof, merkleRoot, keccak256(abi.encodePacked(msg.sender))), 
+                "Tool: Invalid allowlist credentials.");
+        _;
     }
 //----------------------------------HELPER-----------------------------------\\
 //---------------------------------------------------------------------------\\
