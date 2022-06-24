@@ -18,10 +18,10 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     
     uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
     uint8 public currentIndex = 1;
-    bytes32 private merkleRoot;
     bool private openMint = false;
     bool private openALMint = false;
-
+    bytes32 private merkleRoot;
+    mapping(address => bool) public claimedToken;
 
     function publicMint() public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
@@ -47,6 +47,9 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
             require(_currentIndex < MAX_TOKENS_PLUS_ONE,
                     "Tool: Mint would exceed max number of tokens.");
             require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
+            require(claimedToken[msg.sender] == false, 
+                    "Tool: This wallet has already claimed their token.");
+            claimedToken[msg.sender] = true;
             
             _mint(msg.sender, _currentIndex);
 
