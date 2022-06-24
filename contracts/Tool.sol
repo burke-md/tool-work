@@ -23,13 +23,13 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     bool private openALMint = false;
 
 
-    function publicMint(address _to) public  onlyWhenMintOpen {
+    function publicMint() public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
                 "Tool: Mint would exceed max number of tokens.");
         require(msg.sender == tx.origin, "Tool: Cannot mint to contract.");
         
-        _mint(_to, _currentIndex);
+        _mint(msg.sender, _currentIndex);
 
         unchecked {
             currentIndex++;
@@ -38,7 +38,7 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
         setFullURI(_currentIndex);
     }
 
-    function allowListMint(bytes32 leaf, bytes32[] memory proof) 
+    function allowListMint(bytes32[] calldata proof) 
         public  
         onlyWhenALMintOpen  
         onlyValidALMintCredentials {
@@ -79,7 +79,8 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     }
 
     modifier onlyValidALMintCredentials () {
-        require(MerkleProof.verify(proof, root, leaf), 
+        require(MerkleProof.verify(
+            proof, root, keccak256(abi.encodePacked(msg.sender))), 
                 "Tool: Invalid allowlist credentials.");
         _;
     }
