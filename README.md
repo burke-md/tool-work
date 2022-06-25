@@ -1,4 +1,4 @@
-# Tool work
+# Tool work 
 
 This repo will be a continuation of the work that began in previous project. 
 It can be found [here](https://github.com/burke-md/tool-nft).
@@ -6,9 +6,10 @@ It can be found [here](https://github.com/burke-md/tool-nft).
 The goals of this are:
 
 - [x] Use CI to run tests and gas efficiency report when code is pushed
-- [ ] Rework whitelist/allow list implementation (use Merkle tree)
+- [x] Rework whitelist/allow list implementation (use Merkle tree)
+- [x] Write appropriate tests for allowlist
 - [x] Examine current gas efficiency (gas efficiency to run on merge w/ CI)
-- [ ] Make any changes possible to improve gas efficiency 
+- [-] Make any changes possible to improve gas efficiency 
 See documentation/gasEfficiency.md for break down of changes and their effect.
 
 ## Reports 
@@ -17,3 +18,8 @@ See documentation/gasEfficiency.md for break down of changes and their effect.
 ```npx hardhat test``` Will show tests and gas efficiency in the terminal
 
 ```npx hardhat coverage``` Will show test and test coverage in the terminal
+
+## Next steps
+
+- [ ] Contiunue to explore gas efficiency(perhaps an alternative ERC standard)
+- [ ] Dive into possible security issues/analysis tools
