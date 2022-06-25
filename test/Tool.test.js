@@ -1,18 +1,20 @@
 const { expect, use } = require('chai');
 const { ethers } = require('hardhat');
-const { MerkleTree } = require('merkletreejs');
-const { keccak256 } = ethers.utils;
+const { generateMerkleTree } = require('./utils/merkleTree');
 
 use(require('chai-as-promised'));
 
-describe('Tool', function () {
 
-    let address0Proof;
+
+describe('Tool', function () {
     before(async function () {
         this.Tool= await ethers.getContractFactory('Tool');
     });
 
     beforeEach(async function () {
+        const availableAccounts = await hre.ethers.getSigners();
+        const { address0Proof, merkleRoot } = generateMerkleTree(availableAccounts);
+
         this.tool = await this.Tool.deploy();
         await this.tool.deployed();
 
@@ -20,20 +22,7 @@ describe('Tool', function () {
         await this.tool.setOpenMint(true);
         await this.tool.setOpenALMint(true);
 
-        const accounts = await hre.ethers.getSigners();
-
-        const allowListAccountAddresses = accounts.slice(0, 5).map(x => x.address);
-        const blockListAccountAddresses = accounts.slice(5, 10).map(x => x.address);
-        
-        // Where each wallet address is the data to be hashed into a lead node:
-        const leaves = allowListAccountAddresses.map(account => keccak256(account));
-        const tree = new MerkleTree(leaves, keccak256, { sort: true});
-        const merkleRoot = tree.getHexRoot();
-
-        // After list is compiled and tree is build, each wallet holder is given
-        // a key or "proof" (bytes32). These are not interchangable. 
-        address0Proof = tree.getHexProof(keccak256(allowListAccountAddresses[0]));
-
+        // @dev root is to be set in contract constructor
         await this.tool.setRoot(merkleRoot);
     });
 
@@ -43,7 +32,6 @@ describe('Tool', function () {
 
         expect((await this.tool.getNumMintedTokens()).toString()).to.equal('2');
     });
-
 
     it('should not mint more than maximum allowable tokens', async function () {
         let isErr = false;  
@@ -96,6 +84,7 @@ describe('Tool', function () {
 
 
     it('should mint a new token via allowListMint function.', async function () {
+        //await this.tool.allowListMint(address0Proof);
         expect(this.tool.allowListMint(address0Proof)).to.not.be.rejected;
         expect((await this.tool.getNumMintedTokens()).toString()).to.equal('1');
     });
