@@ -80,6 +80,10 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
         _;
     }
 
+    /** @notice The onlyValidALMintCredentials modifier is used to ensure
+    *   the proof provided by the user is correct and associated w/ the address
+    *   calling the allowlist mint function.
+    */
     modifier onlyValidALMintCredentials(bytes32[] calldata _proof) {
         require(MerkleProof.verify(
             _proof, merkleRoot, keccak256(abi.encodePacked(msg.sender))), 
