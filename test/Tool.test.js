@@ -17,8 +17,8 @@ describe('Tool', function () {
         await this.tool.deployed();
 
         //Set both regular and allowlist mint to true
-        await this.tool.setOpenMint(true);
-        await this.tool.setOpenALMint(true);
+        await this.tool.toggleIsOpenPublicMint();
+        await this.tool.toggleIsOpenALMint();
     });
 
     it('increments token counter correctly', async function () {
