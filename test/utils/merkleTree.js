@@ -2,8 +2,6 @@ const { MerkleTree } = require('merkletreejs');
 const { keccak256 } = ethers.utils;
 
 const generateMerkleTree = (accountInfoArr) => {
-    //if(!accountInfoArr) return null;
-
     const allowListAccountAddresses = accountInfoArr.slice(0, 5).map(x => x.address);
     const blockListAccountAddresses = accountInfoArr.slice(5, 10).map(x => x.address);
     
@@ -15,8 +13,11 @@ const generateMerkleTree = (accountInfoArr) => {
     // After list is compiled and tree is build, each wallet holder is given
     // a key or "proof" ( type bytes32). These are not interchangable. 
     address0Proof = tree.getHexProof(keccak256(allowListAccountAddresses[0]));
+    address1Proof = tree.getHexProof(keccak256(allowListAccountAddresses[1]));
+
     return {
         address0Proof,
+        address1Proof,
         merkleRoot
     }
 };

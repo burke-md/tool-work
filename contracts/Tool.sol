@@ -10,18 +10,17 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
    
-    /** @dev merkleRoot to be set in constructor
-    *
-    */ 
-    constructor() ERC721("Tool", "TOOL") {}
-    
     uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
     uint8 public currentIndex = 1;
-    bool private openMint = false;
-    bool private openALMint = false;
+    bool private isOpenPublicMint = false;
+    bool private isOpenALMint = false;
     bytes32 private merkleRoot;
     mapping(address => bool) public claimedToken;
-
+    
+    constructor(bytes32 _root) ERC721("Tool", "TOOL") {
+        merkleRoot = _root;
+    }
+    
     function publicMint() public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
@@ -71,12 +70,12 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
 //---------------------------------------------------------------------------\\
 
     modifier onlyWhenMintOpen() {
-        require(openMint == true, "Tool: Minting has not been opened.");
+        require(isOpenPublicMint == true, "Tool: Minting has not been opened.");
         _;
     }
 
     modifier onlyWhenALMintOpen() {
-        require(openALMint == true, "Tool: Allow list minting has not been opened.");
+        require(isOpenALMint == true, "Tool: Allow list minting has not been opened.");
         _;
     }
 
@@ -143,17 +142,14 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
 //---------------------------------SETTERS-----------------------------------\\ 
 //---------------------------------------------------------------------------\\
 
-    function setRoot(bytes32 _root) public onlyOwner {
-        merkleRoot = _root;
+    function toggleIsOpenPublicMint() public onlyOwner {
+        isOpenPublicMint = !isOpenPublicMint;
     }
 
-    function setOpenMint(bool _openMintState) public onlyOwner {
-        openMint = _openMintState;
+    function toggleIsOpenALMint() public onlyOwner {
+        isOpenALMint = !isOpenALMint;
     }
 
-    function setOpenALMint(bool _openALMintState) public onlyOwner {
-        openALMint = _openALMintState;
-    }
 //--------------------------------OVERRIDES----------------------------------\\
 //---------------------------------------------------------------------------\\
 

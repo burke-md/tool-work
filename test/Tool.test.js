@@ -4,8 +4,6 @@ const { generateMerkleTree } = require('./utils/merkleTree');
 
 use(require('chai-as-promised'));
 
-
-
 describe('Tool', function () {
     before(async function () {
         this.Tool= await ethers.getContractFactory('Tool');
@@ -15,15 +13,12 @@ describe('Tool', function () {
         const availableAccounts = await hre.ethers.getSigners();
         const { address0Proof, merkleRoot } = generateMerkleTree(availableAccounts);
 
-        this.tool = await this.Tool.deploy();
+        this.tool = await this.Tool.deploy(merkleRoot);
         await this.tool.deployed();
 
         //Set both regular and allowlist mint to true
-        await this.tool.setOpenMint(true);
-        await this.tool.setOpenALMint(true);
-
-        // @dev root is to be set in contract constructor
-        await this.tool.setRoot(merkleRoot);
+        await this.tool.toggleIsOpenPublicMint();
+        await this.tool.toggleIsOpenALMint();
     });
 
     it('increments token counter correctly', async function () {
