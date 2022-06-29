@@ -12,8 +12,8 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
    
     uint8 public constant MAX_TOKENS_PLUS_ONE = 6;
     uint8 public currentIndex = 1;
-    bool private openMint = false;
-    bool private openALMint = false;
+    bool private isOpenPublicMint = false;
+    bool private isOpenALMint = false;
     bytes32 private merkleRoot;
     mapping(address => bool) public claimedToken;
     
@@ -21,7 +21,6 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
         merkleRoot = _root;
     }
     
-
     function publicMint() public  onlyWhenMintOpen {
         uint8 _currentIndex = currentIndex;
         require(_currentIndex < MAX_TOKENS_PLUS_ONE,
@@ -71,12 +70,12 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
 //---------------------------------------------------------------------------\\
 
     modifier onlyWhenMintOpen() {
-        require(openMint == true, "Tool: Minting has not been opened.");
+        require(isOpenPublicMint == true, "Tool: Minting has not been opened.");
         _;
     }
 
     modifier onlyWhenALMintOpen() {
-        require(openALMint == true, "Tool: Allow list minting has not been opened.");
+        require(isOpenALMint == true, "Tool: Allow list minting has not been opened.");
         _;
     }
 
@@ -143,13 +142,14 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
 //---------------------------------SETTERS-----------------------------------\\ 
 //---------------------------------------------------------------------------\\
 
-    function setOpenMint(bool _openMintState) public onlyOwner {
-        openMint = _openMintState;
+    function toggleIsOpenPublicMint() public onlyOwner {
+        isOpenPublicMint = !isOpenPublicMint;
     }
 
-    function setOpenALMint(bool _openALMintState) public onlyOwner {
-        openALMint = _openALMintState;
+    function toggleIsOpenALMint() public onlyOwner {
+        isOpenALMint = !isOpenALMint;
     }
+
 //--------------------------------OVERRIDES----------------------------------\\
 //---------------------------------------------------------------------------\\
 
