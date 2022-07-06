@@ -15,6 +15,11 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
     bool private isOpenPublicMint = false;
     bool private isOpenALMint = false;
     bytes32 private merkleRoot;
+
+    /** @notice claimedToken (bool) is to ensure that each address on the
+    *   allowlist claims ONLY one token. This could easily be changed to an 
+    *   uint to allow a fixed number of tokens for each contract.
+    */
     mapping(address => bool) public claimedToken;
     
     constructor(bytes32 _root) ERC721("Tool", "TOOL") {
@@ -142,10 +147,16 @@ contract Tool is ERC721, ERC721URIStorage, Pausable, Ownable {
 //---------------------------------SETTERS-----------------------------------\\ 
 //---------------------------------------------------------------------------\\
 
+    /** toggleIsOpenPublicMint will change the var state that allows/does not
+    *   allow the general public to mint token.
+    */
     function toggleIsOpenPublicMint() public onlyOwner {
         isOpenPublicMint = !isOpenPublicMint;
     }
 
+    /** toggleIsOpenALMint will change the var state that allows/does not
+    *   allow the allowlist proof holders to mint a token.
+    */
     function toggleIsOpenALMint() public onlyOwner {
         isOpenALMint = !isOpenALMint;
     }
