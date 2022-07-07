@@ -11,7 +11,10 @@ describe('Tool', function () {
 
     beforeEach(async function () {
         const availableAccounts = await hre.ethers.getSigners();
-        const { address0Proof, merkleRoot } = generateMerkleTree(availableAccounts);
+        const { 
+            address0Proof, 
+            address1Proof,
+            merkleRoot } = generateMerkleTree(availableAccounts);
 
         this.tool = await this.Tool.deploy(merkleRoot);
         await this.tool.deployed();
@@ -53,6 +56,11 @@ describe('Tool', function () {
         expect(token2URI).to.equal("ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/2.json");
     });
 
+    it('should mint a new token via allowListMint function.', async function () {
+        expect(this.tool.allowListMint(address0Proof)).to.not.be.rejected;
+        expect((await this.tool.getNumMintedTokens()).toString()).to.equal('1');
+    });
+
     it('should not mint a new token after contract has been paused.', async function () {
         let isErr = false;
         await this.tool.pause();
@@ -77,10 +85,15 @@ describe('Tool', function () {
         expect(createToken).not.to.throw();
     });
 
+    xit('should toggle allowlist minting on/off correctly.', async function () {
+        //expect(this.tool.allowListMint(address0Proof)).to.not.be.rejected;
 
-    it('should mint a new token via allowListMint function.', async function () {
-        //await this.tool.allowListMint(address0Proof);
-        expect(this.tool.allowListMint(address0Proof)).to.not.be.rejected;
-        expect((await this.tool.getNumMintedTokens()).toString()).to.equal('1');
+        await this.tool.toggleIsOpenALMint();
+
+        //expect(await this.tool.allowListMint(address0Proof)).to.be.rejected;
+    });
+
+    xit('should toggle public`  minting on/off correctly.', async () => {
+        expect(true).to.equal(true);
     });
 });
